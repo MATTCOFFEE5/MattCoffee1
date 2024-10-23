@@ -1,0 +1,56 @@
+<?php
+// Verifica si se ha enviado un comentario
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $nombre = htmlspecialchars($_POST['nombre']);
+    $comentario = htmlspecialchars($_POST['comentario']);
+    
+    // Abre el archivo para agregar el nuevo comentario
+    $archivo = fopen("comments.txt", "a");
+    
+    // Formato: nombre + comentario + salto de línea
+    fwrite($archivo, $nombre . ": " . $comentario . "\n");
+    
+    // Cierra el archivo
+    fclose($archivo);
+    
+    // Redirige para evitar reenvío del formulario al actualizar
+    header("Location: comentarios.php");
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comentarios</title>
+</head>
+<body>
+    <h2>Deja tu comentario</h2>
+    <form method="post" action="comentarios.php">
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+        
+        <label for="comentario">Comentario:</label><br>
+        <textarea id="comentario" name="comentario" rows="4" cols="50" required></textarea><br><br>
+        
+        <input type="submit" value="Enviar comentario">
+    </form>
+
+    <h2>Comentarios previos</h2>
+    <div>
+        <?php
+        // Muestra los comentarios del archivo
+        if (file_exists("comments.txt")) {
+            $comentarios = file("comments.txt");
+            foreach ($comentarios as $comentario) {
+                echo nl2br(htmlspecialchars($comentario));
+            }
+        } else {
+            echo "Aún no hay comentarios.";
+        }
+        ?>
+    </div>
+</body>
+</html>
